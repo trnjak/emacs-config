@@ -24,7 +24,7 @@ The default theme is Venturemacs-light. To change it to the dark theme, change t
 to:
 
 #+BEGIN_SRC lisp
-(load-theme 'Venturemacs t)
+(load-theme 'Venturemacs-dark t)
 #+END_SRC
 
 * Configuration
