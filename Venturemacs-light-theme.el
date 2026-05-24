@@ -1,5 +1,5 @@
 (deftheme Venturemacs-light
-  "It's Venture! (light)")
+  "Venturemacs light theme")
 
 (custom-theme-set-variables
  'Venturemacs-light

@@ -155,10 +155,9 @@ to:
 
 (use-package powerline
   :ensure t
-  :init
+  :config
   (spaceline-spacemacs-theme)
-  :hook
-  (after-init . powerline-reset))
+  (powerline-reset))
 #+END_SRC  
 
 ** dashboard
@@ -168,7 +167,7 @@ to:
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title "V E N T U R E M A C S")
-  (setq dashboard-startup-banner (expand-file-name "dash.png" user-emacs-directory))
+  (setq dashboard-startup-banner (cons (expand-file-name "dash.png" user-emacs-directory) (expand-file-name "dash.txt" user-emacs-directory)))
   (setq dashboard-footer-messages '("V E N T U R E M A C S"))
   (setq dashboard-items '((recents . 5)))
   (setq dashboard-center-content t)

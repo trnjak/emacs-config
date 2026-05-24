@@ -1,8 +1,10 @@
 .DS_Store
 auto-save-list
 elpa
+etc
 games
 snippets
 transient
+var
 README.el
 recentf
