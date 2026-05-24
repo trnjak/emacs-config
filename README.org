@@ -106,10 +106,46 @@ to:
 #+END_SRC  
 
 * Packages
-** diminish
+** core utilities
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
   :ensure t)
+
+(use-package no-littering
+  :ensure t)
+#+END_SRC  
+
+** evil bindings
+#+BEGIN_SRC emacs-lisp
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+#+END_SRC
+
+** completion ui and key discovery
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))  
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))) 
+
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+  (which-key-mode 1))
 #+END_SRC  
 
 ** spaceline and powerline
@@ -141,35 +177,16 @@ to:
   (setq dashboard-set-file-icons t))
 #+END_SRC  
 
-** completion ui
+** corfu
 #+BEGIN_SRC emacs-lisp
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode))  
-
-(use-package orderless
+(use-package corfu
   :ensure t
   :custom
-  (completion-styles '(orderless basic)))  
-
-(use-package marginalia
-  :ensure t
+  (corfu-auto t)
+  (corfu-auto-prefix 1)
+  (corfu-auto-delay 0.0)
   :init
-  (marginalia-mode))
-#+END_SRC  
-
-** company
-#+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :defer t
-  :diminish company-mode
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1)
-  :hook
-  (prog-mode . company-mode))
+  (global-corfu-mode))
 #+END_SRC  
 
 ** eglot
@@ -218,6 +235,13 @@ to:
 (use-package yasnippet-snippets
   :ensure t
   :defer t)
+#+END_SRC
+
+** org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode))
 #+END_SRC
 
 ** markdown-mode
