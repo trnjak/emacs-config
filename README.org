@@ -132,7 +132,7 @@ to:
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title "V E N T U R E M A C S")
-  (setq dashboard-startup-banner (expand-file-name "venturemacs.png" user-emacs-directory))
+  (setq dashboard-startup-banner (expand-file-name "dash.png" user-emacs-directory))
   (setq dashboard-footer-messages '("V E N T U R E M A C S"))
   (setq dashboard-items '((recents . 5)))
   (setq dashboard-center-content t)
