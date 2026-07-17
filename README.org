@@ -231,11 +231,21 @@ to:
   :ensure t
   :custom
   (corfu-auto t)
-  (corfu-auto-prefix 1)
-  (corfu-auto-delay 0.0)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.1)
   :init
   (global-corfu-mode))
-#+END_SRC  
+#+END_SRC
+
+** cape
+#+BEGIN_SRC emacs-lisp
+(use-package cape
+  :ensure t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+#+END_SRC
 
 ** eglot
 #+BEGIN_SRC emacs-lisp
@@ -249,8 +259,9 @@ to:
    (rust-mode . eglot-ensure)
    (html-mode . eglot-ensure)
    (css-mode . eglot-ensure)
-   (js-mode . eglot-ensure)))
-#+END_SRC  
+   (js-mode . eglot-ensure)
+   (python-mode . eglot-ensure)))
+#+END_SRC
 
 ** rust, web mode
 #+BEGIN_SRC emacs-lisp
