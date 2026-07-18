@@ -15,16 +15,16 @@ git clone https://github.com/trnjak/Venturemacs.git ~/.emacs.d/
 
 After installing, the first run of Emacs will take a bit longer, as it has to install the packages listed in the README.org file for the first time.
 
-The default theme is Venturemacs-light. To change it to the dark theme, change this part of init.el:
+The default theme is Venturemacs-dark. To change it to the light theme, change this part of init.el:
 
 #+BEGIN_SRC lisp
-(load-theme 'Venturemacs-light t)
+(load-theme 'Venturemacs-dark t)
 #+END_SRC
 
 to:
 
 #+BEGIN_SRC lisp
-(load-theme 'Venturemacs-dark t)
+(load-theme 'Venturemacs-light t)
 #+END_SRC
 
 * Configuration
