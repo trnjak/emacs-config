@@ -3,10 +3,10 @@
 [[file:venturemacs.png]]
 
 * About
-These files were made to make Emacs usable on modern macOS, as well as make it look cool.\\
-While it consists mostly of things that are useful to me, the configuration is very minimal and modular, so anyone can easily build upon it. :)
+This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.\\
+While it consists of things that are useful to me, the configuration is very minimal and modular, so anyone can easily build upon it. :)
 
-I plan to keep Venturemacs up to date with any changes to Emacs and its packages, as well as add more features when I find them useful.
+Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got me into Emacs back when I had a laptop that ran GNU/Linux. While Witchmacs is pretty outdated now, I recommend checking it out, as it explains things in greater detail.
 
 * Install
 #+BEGIN_SRC shell
