@@ -6,5 +6,6 @@ games
 snippets
 transient
 var
+custom.el
 README.el
 recentf

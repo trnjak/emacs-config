@@ -1,6 +1,4 @@
-#+TITLE: Venturemacs
-
-[[file:venturemacs.png]]
+#+TITLE: My Emacs Config
 
 * About
 This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.\\
@@ -10,22 +8,10 @@ Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got m
 
 * Install
 #+BEGIN_SRC shell
-git clone https://github.com/trnjak/Venturemacs.git ~/.emacs.d/
-#+END_SRC
+git clone https://github.com/trnjak/emacs-config.git ~/.emacs.d/
+#+END_SRCi
 
 After installing, the first run of Emacs will take a bit longer, as it has to install the packages listed in the README.org file for the first time.
-
-The default theme is Venturemacs-dark. To change it to the light theme, change this part of init.el:
-
-#+BEGIN_SRC lisp
-(load-theme 'Venturemacs-dark t)
-#+END_SRC
-
-to:
-
-#+BEGIN_SRC lisp
-(load-theme 'Venturemacs-light t)
-#+END_SRC
 
 * Configuration
 ** Optimisations for macOS
@@ -176,9 +162,9 @@ to:
   :ensure t
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title "V E N T U R E M A C S")
-  (setq dashboard-startup-banner (cons (expand-file-name "dash.png" user-emacs-directory) (expand-file-name "dash.txt" user-emacs-directory)))
-  (setq dashboard-footer-messages '("V E N T U R E M A C S"))
+  (setq dashboard-banner-logo-title "E M A C S")
+  (setq dashboard-startup-banner (expand-file-name "dash.png" user-emacs-directory))
+  (setq dashboard-footer-messages '("E M A C S"))
   (setq dashboard-items '((recents . 5)))
   (setq dashboard-center-content t)
   (setq dashboard-items-default-alignment 'center)

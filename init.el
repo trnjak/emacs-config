@@ -49,7 +49,7 @@
 (add-hook 'window-setup-hook #'my/center-frame)
 
 (add-to-list 'custom-theme-load-path user-emacs-directory)
-(load-theme 'Venturemacs-dark t)
+(load-theme 'monokai t)
 
 (require 'org)
 (let ((org-file (expand-file-name "README.org" user-emacs-directory))
