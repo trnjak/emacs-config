@@ -9,7 +9,7 @@ Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got m
 * Install
 #+BEGIN_SRC shell
 git clone https://github.com/trnjak/emacs-config.git ~/.emacs.d/
-#+END_SRCi
+#+END_SRC
 
 After installing, the first run of Emacs will take a bit longer, as it has to install the packages listed in the README.org file for the first time.
 
