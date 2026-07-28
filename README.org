@@ -1,4 +1,5 @@
 #+TITLE: My Emacs Config
+#+PROPERTY: header-args:emacs-lisp :lexical t
 
 * About
 This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.\\
@@ -7,8 +8,11 @@ While it consists of things that are useful to me, the configuration is very min
 Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got me into Emacs back when I had a laptop that ran GNU/Linux. While Witchmacs is pretty outdated now, I recommend checking it out, as it explains things in greater detail.
 
 * Install
+The latest version of Emacs that I can confirm works with the config is 30.1\\
+Once Emacs is installed on your system, simply run the code below in your terminal:
+
 #+BEGIN_SRC shell
-git clone https://github.com/trnjak/emacs-config.git ~/.emacs.d/
+  git clone https://github.com/trnjak/emacs-config.git ~/.emacs.d/
 #+END_SRC
 
 After installing, the first run of Emacs will take a bit longer, as it has to install the packages listed in the README.org file for the first time.
@@ -28,7 +32,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** Show line numbers
 #+BEGIN_SRC emacs-lisp
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 #+END_SRC  
 
 ** Show parent parentheses
@@ -61,7 +65,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** Disable ring-bell
 #+BEGIN_SRC emacs-lisp
-(setq ring-bell-function 'ignore)
+(setq ring-bell-function #'ignore)
 #+END_SRC  
 
 ** Highlight line
@@ -71,7 +75,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** Transform yes-or-no into y-or-n
 #+BEGIN_SRC emacs-lisp
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setopt use-short-answers t)
 #+END_SRC  
 
 ** Creating new window switches cursor to it
@@ -81,14 +85,14 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (split-window-below)
   (balance-windows)
   (other-window 1))
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)  
+(global-set-key (kbd "C-x 2") #'split-and-follow-horizontally)  
 
 (defun split-and-follow-vertically ()
   (interactive)
   (split-window-right)
   (balance-windows)
   (other-window 1))
-(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+(global-set-key (kbd "C-x 3") #'split-and-follow-vertically)
 #+END_SRC  
 
 * Packages

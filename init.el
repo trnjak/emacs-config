@@ -1,3 +1,7 @@
+(setq warning-minimum-level :error
+      byte-compile-warnings nil
+      native-comp-async-report-warnings-errors nil)
+
 (when (eq system-type 'darwin)
   (setq ns-pop-up-frames nil)
   (add-hook 'emacs-startup-hook
@@ -17,8 +21,8 @@
   (setq gc-cons-threshold 16777216
         gc-cons-percentage 0.1))
 
-(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
-(add-hook 'emacs-startup-hook 'startup/reset-gc)
+(add-hook 'emacs-startup-hook #'startup/revert-file-name-handler-alist)
+(add-hook 'emacs-startup-hook #'startup/reset-gc)
 
 (require 'package)
 (setq package-enable-at-startup nil)
