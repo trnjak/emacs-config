@@ -225,6 +225,11 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (corfu-auto-delay 0.1)
   :init
   (global-corfu-mode))
+(use-package corfu-terminal
+  :ensure t
+  :config
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
 #+END_SRC
 
 ** cape
