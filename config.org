@@ -46,9 +46,12 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** Turn off most GUI elements
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
 #+END_SRC
 
 ** Enable copypasting outside of Emacs
@@ -163,11 +166,13 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 #+BEGIN_SRC emacs-lisp
 (use-package dashboard
   :ensure t
+  :init
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title nil)
   (setq dashboard-startup-banner
-      (if (display-graphic-p) (expand-file-name "dash.png" user-emacs-directory) 'official))
+      (if (display-graphic-p) (expand-file-name "dash.png" user-emacs-directory) 1))
   (setq dashboard-items '((recents . 5)))
   (setq dashboard-center-content t)
   (setq dashboard-items-default-alignment 'center)
