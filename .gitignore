@@ -7,5 +7,6 @@ snippets
 transient
 var
 custom.el
-README.el
-recentfdash.png
+config.el
+recentf
+dash.png
