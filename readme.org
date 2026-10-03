@@ -2,7 +2,7 @@
 #+PROPERTY: header-args:emacs-lisp :lexical t
 
 * About
-This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.\\
+This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.
 While it consists of things that are useful to me, the configuration is very minimal and modular, so anyone can easily build upon it. :)
 
 Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got me into Emacs back when I had a laptop that ran GNU/Linux. While Witchmacs is pretty outdated now, I recommend checking it out, as it explains things in greater detail.
