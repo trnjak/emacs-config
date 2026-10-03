@@ -3,6 +3,7 @@
       native-comp-async-report-warnings-errors nil)
 
 (when (eq system-type 'darwin)
+  (setenv "MACOSX_DEPLOYMENT_TARGET" "14.0")
   (setq ns-pop-up-frames nil)
   (add-hook 'emacs-startup-hook
 	    (lambda () (run-with-idle-timer 1 nil
@@ -34,9 +35,6 @@
   (package-install 'evil))
 (require 'evil)
 (evil-mode 1)
-
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
 
 (defun my/center-frame ()
   (let* ((f (selected-frame))

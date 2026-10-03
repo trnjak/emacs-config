@@ -28,55 +28,55 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
-#+END_SRC  
+#+END_SRC
 
 ** Show line numbers
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-#+END_SRC  
+#+END_SRC
 
 ** Show parent parentheses
 #+BEGIN_SRC emacs-lisp
 (show-paren-mode 1)
-#+END_SRC  
+#+END_SRC
 
 ** Turn off default start screen
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
-#+END_SRC  
+#+END_SRC
 
 ** Turn off most GUI elements
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-#+END_SRC  
+#+END_SRC
 
 ** Enable copypasting outside of Emacs
 #+BEGIN_SRC emacs-lisp
 (setq select-enable-clipboard t)
-#+END_SRC  
+#+END_SRC
 
 ** Disable automatic creation of backup files
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil)
 (setq auto-save-default nil)
-#+END_SRC  
+#+END_SRC
 
 ** Disable ring-bell
 #+BEGIN_SRC emacs-lisp
 (setq ring-bell-function #'ignore)
-#+END_SRC  
+#+END_SRC
 
 ** Highlight line
 #+BEGIN_SRC emacs-lisp
 (global-hl-line-mode t)
-#+END_SRC  
+#+END_SRC
 
 ** Transform yes-or-no into y-or-n
 #+BEGIN_SRC emacs-lisp
 (setopt use-short-answers t)
-#+END_SRC  
+#+END_SRC
 
 ** Creating new window switches cursor to it
 #+BEGIN_SRC emacs-lisp
@@ -85,7 +85,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (split-window-below)
   (balance-windows)
   (other-window 1))
-(global-set-key (kbd "C-x 2") #'split-and-follow-horizontally)  
+(global-set-key (kbd "C-x 2") #'split-and-follow-horizontally)
 
 (defun split-and-follow-vertically ()
   (interactive)
@@ -93,7 +93,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (balance-windows)
   (other-window 1))
 (global-set-key (kbd "C-x 3") #'split-and-follow-vertically)
-#+END_SRC  
+#+END_SRC
 
 * Packages
 ** core utilities
@@ -103,7 +103,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 (use-package no-littering
   :ensure t)
-#+END_SRC  
+#+END_SRC
 
 ** evil bindings
 #+BEGIN_SRC emacs-lisp
@@ -119,12 +119,12 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package vertico
   :ensure t
   :init
-  (vertico-mode))  
+  (vertico-mode))
 
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic))) 
+  (completion-styles '(orderless basic)))
 
 (use-package marginalia
   :ensure t
@@ -136,7 +136,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   :diminish which-key-mode
   :config
   (which-key-mode 1))
-#+END_SRC  
+#+END_SRC
 
 ** search and navigation
 #+BEGIN_SRC emacs-lisp
@@ -151,14 +151,14 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 ** spaceline and powerline
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline
-  :ensure t)  
+  :ensure t)
 
 (use-package powerline
   :ensure t
   :config
   (spaceline-spacemacs-theme)
   (powerline-reset))
-#+END_SRC  
+#+END_SRC
 
 ** dashboard
 #+BEGIN_SRC emacs-lisp
@@ -174,7 +174,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (setq dashboard-items-default-alignment 'center)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t))
-#+END_SRC  
+#+END_SRC
 
 ** file explorer
 #+BEGIN_SRC emacs-lisp
@@ -275,7 +275,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package magit
   :ensure t
   :commands (magit-status))
-#+END_SRC  
+#+END_SRC
 
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
