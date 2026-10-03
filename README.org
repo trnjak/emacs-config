@@ -8,7 +8,6 @@ While it consists of things that are useful to me, the configuration is very min
 Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got me into Emacs back when I had a laptop that ran GNU/Linux. While Witchmacs is pretty outdated now, I recommend checking it out, as it explains things in greater detail.
 
 * Install
-The latest version of Emacs that I can confirm works with the config is 30.1\\
 Once Emacs is installed on your system, simply run the code below in your terminal:
 
 #+BEGIN_SRC shell
