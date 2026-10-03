@@ -164,20 +164,23 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** dashboard
 #+BEGIN_SRC emacs-lisp
-(use-package dashboard
-  :ensure t
-  :init
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title nil)
-  (setq dashboard-startup-banner
-      (if (display-graphic-p) (expand-file-name "dash.png" user-emacs-directory) 1))
-  (setq dashboard-items '((recents . 5)))
-  (setq dashboard-center-content t)
-  (setq dashboard-items-default-alignment 'center)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t))
+  (use-package dashboard
+    :ensure t
+    :init
+    (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+    :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-banner-logo-title nil)
+    (let ((banner-img (expand-file-name "dash.png" user-emacs-directory)))
+      (setq dashboard-startup-banner
+        (if (and (display-graphic-p) (file-exists-p banner-img))
+  	  banner-img
+  	'1)))
+    (setq dashboard-items '((recents . 5)))
+    (setq dashboard-center-content t)
+    (setq dashboard-items-default-alignment 'center)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t))
 #+END_SRC
 
 ** file explorer
