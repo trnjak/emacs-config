@@ -54,8 +54,8 @@
 (load-theme 'monokai t)
 
 (require 'org)
-(let ((org-file (expand-file-name "README.org" user-emacs-directory))
-      (el-file (expand-file-name "README.el" user-emacs-directory)))
+(let ((org-file (expand-file-name "readme.org" user-emacs-directory))
+      (el-file (expand-file-name "readme.el" user-emacs-directory)))
   (if (file-newer-than-file-p org-file el-file)
       (org-babel-load-file org-file)
     (load el-file)))
