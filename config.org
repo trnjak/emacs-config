@@ -19,11 +19,15 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 * Configuration
 ** Optimisations for macOS
 #+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t; -*-
+
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'super)
 
 (use-package exec-path-from-shell
   :ensure t
+  :init
+  (setq exec-path-from-shell-arguments nil)
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
@@ -103,7 +107,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package diminish
   :ensure t)
 
-(use-package no-littering
+(use-package nerd-icons
   :ensure t)
 #+END_SRC
 
@@ -164,23 +168,24 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 ** dashboard
 #+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :init
-    (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-    :config
-    (dashboard-setup-startup-hook)
-    (setq dashboard-banner-logo-title nil)
-    (let ((banner-img (expand-file-name "dash.png" user-emacs-directory)))
-      (setq dashboard-startup-banner
-        (if (and (display-graphic-p) (file-exists-p banner-img))
-  	  banner-img
-  	'1)))
-    (setq dashboard-items '((recents . 5)))
-    (setq dashboard-center-content t)
-    (setq dashboard-items-default-alignment 'center)
-    (setq dashboard-set-heading-icons t)
-    (setq dashboard-set-file-icons t))
+(use-package dashboard
+  :ensure t
+  :init
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title nil)
+  (let ((banner-img (expand-file-name "dash.png" user-emacs-directory)))
+    (setq dashboard-startup-banner
+          (if (and (display-graphic-p) (file-exists-p banner-img))
+              banner-img
+            '1)))
+  (setq dashboard-items '((recents . 5)))
+  (setq dashboard-center-content t)
+  (setq dashboard-items-default-alignment 'center)
+  (setq dashboard-icon-type 'nerd-icons)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t))
 #+END_SRC
 
 ** file explorer
@@ -232,11 +237,6 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   (corfu-auto-delay 0.1)
   :init
   (global-corfu-mode))
-(use-package corfu-terminal
-  :ensure t
-  :config
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
 #+END_SRC
 
 ** cape
@@ -259,6 +259,7 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
    (c++-mode . eglot-ensure)
    (java-mode . eglot-ensure)
    (rust-mode . eglot-ensure)
+   (web-mode . eglot-ensure)
    (html-mode . eglot-ensure)
    (css-mode . eglot-ensure)
    (js-mode . eglot-ensure)
@@ -288,14 +289,14 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
-  :defer t
   :diminish yas-minor-mode
+  :hook (prog-mode . yas-minor-mode)
   :config
-  (yas-global-mode 1))
+  (yas-reload-all))
 
 (use-package yasnippet-snippets
   :ensure t
-  :defer t)
+  :after yasnippet)
 #+END_SRC
 
 ** org-mode

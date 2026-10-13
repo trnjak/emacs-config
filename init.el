@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t; -*-
+
 (setq warning-minimum-level :error
       byte-compile-warnings nil
       native-comp-async-report-warnings-errors nil)
@@ -6,8 +8,8 @@
   (setenv "MACOSX_DEPLOYMENT_TARGET" "14.0")
   (setq ns-pop-up-frames nil)
   (add-hook 'emacs-startup-hook
-	    (lambda () (run-with-idle-timer 1 nil
-					    (lambda () (setq ns-pop-up-frames t))))))
+            (lambda () (run-with-idle-timer 1 nil
+                                            (lambda () (setq ns-pop-up-frames t))))))
 
 (defvar startup/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
@@ -26,12 +28,29 @@
 (add-hook 'emacs-startup-hook #'startup/reset-gc)
 
 (require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+;; Auto-refresh MELPA archive if a package installation hits a stale 404
+(advice-add 'package-install :around
+            (lambda (orig-fun pkg &rest args)
+              (condition-case nil
+                  (apply orig-fun pkg args)
+                (error
+                 (package-refresh-contents)
+                 (apply orig-fun pkg args)))))
+
+(require 'use-package)
+
+(use-package no-littering
+  :ensure t
+  :demand t)
 
 (setq evil-want-keybinding nil)
 (setq evil-want-integration t)
 (unless (package-installed-p 'evil)
+  (unless package-archive-contents
+    (package-refresh-contents))
   (package-install 'evil))
 (require 'evil)
 (evil-mode 1)
@@ -53,11 +72,12 @@
 (add-to-list 'custom-theme-load-path user-emacs-directory)
 (load-theme 'monokai t)
 
-(require 'org)
 (let ((org-file (expand-file-name "config.org" user-emacs-directory))
       (el-file (expand-file-name "config.el" user-emacs-directory)))
   (if (file-newer-than-file-p org-file el-file)
-      (org-babel-load-file org-file)
+      (progn
+        (require 'org)
+        (org-babel-load-file org-file))
     (load el-file)))
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
