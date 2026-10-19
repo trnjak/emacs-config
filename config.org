@@ -325,17 +325,6 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
                 (concat npm-root ":" (getenv "NODE_PATH"))
               npm-root))))
 
-(defclass my-typescript-server (eglot-lsp-server) ())
-
-(cl-defmethod eglot-initialization-options ((server my-typescript-server))
-  (if-let* ((bin (executable-find "tsserver"))
-            (true-bin (file-truename bin))
-            (lib-dir (expand-file-name "../lib" (file-name-directory true-bin)))
-            ((file-directory-p lib-dir)))
-      `(:tsserver (:path ,lib-dir))
-    (when-let* ((bin (executable-find "tsserver")))
-      `(:tsserver (:path ,(file-truename bin))))))
-
 (use-package eglot
   :ensure t
   :defer t
@@ -354,6 +343,8 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
    (css-ts-mode . eglot-ensure)
    (js-mode . eglot-ensure)
    (js-ts-mode . eglot-ensure)
+   (typescript-mode . eglot-ensure)
+   (typescript-ts-mode . eglot-ensure)
    (python-mode . eglot-ensure)
    (python-ts-mode . eglot-ensure))
   :config
@@ -361,15 +352,10 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
         eglot-events-buffer-size 0)
 
   (add-to-list 'eglot-server-programs
-               `(((js-mode :plugins) (js-ts-mode :plugins)
-                  (typescript-mode :plugins) (typescript-ts-mode :plugins))
-                 . (my-typescript-server "typescript-language-server" "--stdio")))
-
-  (add-to-list 'eglot-server-programs
                '(web-mode . ("vscode-html-language-server" "--stdio")))
+
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
 #+END_SRC
-
 
 ** code formatting
 #+BEGIN_SRC emacs-lisp
