@@ -29,8 +29,37 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   :init
   (setq exec-path-from-shell-arguments nil)
   :config
-  (when (memq window-system '(mac ns x))
+  (when (or (memq window-system '(mac ns x))
+            (eq system-type 'darwin)
+            (daemonp))
     (exec-path-from-shell-initialize)))
+#+END_SRC
+
+** Terminal (-nw) support
+#+BEGIN_SRC emacs-lisp
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key (kbd "<mouse-4>") #'scroll-down-line)
+  (global-set-key (kbd "<mouse-5>") #'scroll-up-line))
+#+END_SRC
+
+** Modern indentation and editing defaults
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil
+              tab-width 4
+              standard-indent 4)
+
+(setq c-default-style '((java-mode . "java")
+                        (awk-mode . "awk")
+                        (other . "linux"))
+      c-basic-offset 4
+      js-indent-level 2
+      css-indent-offset 2
+      python-indent-offset 4)
+
+(electric-pair-mode 1)
+(electric-indent-mode 1)
+(delete-selection-mode 1)
 #+END_SRC
 
 ** Show line numbers
@@ -61,6 +90,10 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 ** Enable copypasting outside of Emacs
 #+BEGIN_SRC emacs-lisp
 (setq select-enable-clipboard t)
+
+(use-package clipetty
+  :ensure t
+  :hook (after-init . global-clipetty-mode))
 #+END_SRC
 
 ** Disable automatic creation of backup files
@@ -109,6 +142,17 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 
 (use-package nerd-icons
   :ensure t)
+
+(use-package editorconfig
+  :ensure t
+  :diminish editorconfig-mode
+  :config
+  (editorconfig-mode 1))
+
+(use-package dtrt-indent
+  :ensure t
+  :diminish dtrt-indent-mode
+  :hook (prog-mode . dtrt-indent-mode))
 #+END_SRC
 
 ** evil bindings
@@ -130,7 +174,11 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic)))
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles basic partial-completion))
+                                   (eglot (styles orderless))
+                                   (eglot-capf (styles orderless)))))
 
 (use-package marginalia
   :ensure t
@@ -233,10 +281,27 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
   :ensure t
   :custom
   (corfu-auto t)
-  (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 1)
+  (corfu-auto-delay 0.05)
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)
+        ("RET" . corfu-insert))
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
+
+(use-package corfu-terminal
+  :ensure t
+  :after corfu
+  :config
+  (unless (display-graphic-p)
+    (corfu-terminal-mode 1)))
 #+END_SRC
 
 ** cape
@@ -244,26 +309,76 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package cape
   :ensure t
   :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+  (add-hook 'completion-at-point-functions #'cape-dabbrev 20)
+  (add-hook 'completion-at-point-functions #'cape-file 20)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block 20))
 #+END_SRC
 
 ** eglot
 #+BEGIN_SRC emacs-lisp
+(when-let* ((npm-root (ignore-errors
+                        (string-trim
+                         (shell-command-to-string "npm root -g 2>/dev/null")))))
+  (when (file-directory-p npm-root)
+    (setenv "NODE_PATH"
+            (if (getenv "NODE_PATH")
+                (concat npm-root ":" (getenv "NODE_PATH"))
+              npm-root))))
+
+(defclass my-typescript-server (eglot-lsp-server) ())
+
+(cl-defmethod eglot-initialization-options ((server my-typescript-server))
+  (if-let* ((bin (executable-find "tsserver"))
+            (true-bin (file-truename bin))
+            (lib-dir (expand-file-name "../lib" (file-name-directory true-bin)))
+            ((file-directory-p lib-dir)))
+      `(:tsserver (:path ,lib-dir))
+    (when-let* ((bin (executable-find "tsserver")))
+      `(:tsserver (:path ,(file-truename bin))))))
+
 (use-package eglot
   :ensure t
   :defer t
   :hook
   ((c-mode . eglot-ensure)
+   (c-ts-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
+   (c++-ts-mode . eglot-ensure)
    (java-mode . eglot-ensure)
+   (java-ts-mode . eglot-ensure)
    (rust-mode . eglot-ensure)
+   (rust-ts-mode . eglot-ensure)
    (web-mode . eglot-ensure)
    (html-mode . eglot-ensure)
    (css-mode . eglot-ensure)
+   (css-ts-mode . eglot-ensure)
    (js-mode . eglot-ensure)
-   (python-mode . eglot-ensure)))
+   (js-ts-mode . eglot-ensure)
+   (python-mode . eglot-ensure)
+   (python-ts-mode . eglot-ensure))
+  :config
+  (setq eglot-autoshutdown t
+        eglot-events-buffer-size 0)
+
+  (add-to-list 'eglot-server-programs
+               `(((js-mode :plugins) (js-ts-mode :plugins)
+                  (typescript-mode :plugins) (typescript-ts-mode :plugins))
+                 . (my-typescript-server "typescript-language-server" "--stdio")))
+
+  (add-to-list 'eglot-server-programs
+               '(web-mode . ("vscode-html-language-server" "--stdio")))
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
+#+END_SRC
+
+
+** code formatting
+#+BEGIN_SRC emacs-lisp
+(use-package format-all
+  :ensure t
+  :commands (format-all-buffer format-all-region format-all-mode)
+  :hook (prog-mode . format-all-ensure-formatter)
+  :config
+  (defalias 'format-buffer #'format-all-buffer))
 #+END_SRC
 
 ** rust, web mode
@@ -275,7 +390,13 @@ After installing, the first run of Emacs will take a bit longer, as it has to in
 (use-package web-mode
   :ensure t
   :defer t
-  :mode ("\\.html\\'" "\\.css\\'"))
+  :mode ("\\.html\\'")
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-css-colorization t))
 #+END_SRC
 
 ** git
