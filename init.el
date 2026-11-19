@@ -1,0 +1,89 @@
+;;; -*- lexical-binding: t; -*-
+
+(setq warning-minimum-level :error
+      byte-compile-warnings nil
+      native-comp-async-report-warnings-errors nil)
+
+(when (eq system-type 'darwin)
+  (setenv "MACOSX_DEPLOYMENT_TARGET" "14.0")
+  (setq ns-pop-up-frames nil)
+  (add-hook 'emacs-startup-hook
+            (lambda () (run-with-idle-timer 1 nil
+                                            (lambda () (setq ns-pop-up-frames t))))))
+
+(defvar startup/file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(defun startup/revert-file-name-handler-alist ()
+  (setq file-name-handler-alist startup/file-name-handler-alist))
+
+(setq gc-cons-threshold 402653184
+      gc-cons-percentage 0.6)
+
+(defun startup/reset-gc ()
+  (setq gc-cons-threshold 16777216
+        gc-cons-percentage 0.1))
+
+(add-hook 'emacs-startup-hook #'startup/revert-file-name-handler-alist)
+(add-hook 'emacs-startup-hook #'startup/reset-gc)
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+;; Auto-refresh MELPA archive if a package installation hits a stale 404
+(advice-add 'package-install :around
+            (lambda (orig-fun pkg &rest args)
+              (condition-case nil
+                  (apply orig-fun pkg args)
+                (error
+                 (package-refresh-contents)
+                 (apply orig-fun pkg args)))))
+
+(require 'use-package)
+
+(use-package no-littering
+  :ensure t
+  :demand t)
+
+(setq evil-want-keybinding nil)
+(setq evil-want-integration t)
+(unless (package-installed-p 'evil)
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (package-install 'evil))
+(require 'evil)
+(evil-mode 1)
+
+(defun my/center-frame ()
+  (when (display-graphic-p)
+    (let* ((f (selected-frame))
+           (workarea (frame-monitor-workarea f))
+           (ml (nth 0 workarea))
+           (mt (nth 1 workarea))
+           (mw (nth 2 workarea))
+           (mh (nth 3 workarea))
+           (fw (frame-pixel-width f))
+           (fh (frame-pixel-height f))
+           (x (+ ml (/ (- mw fw) 2)))
+           (y (+ mt (/ (- mh fh) 2))))
+      (set-frame-position f (max ml x) (max mt y)))))
+
+(add-to-list 'initial-frame-alist '(width . 180))
+(add-to-list 'initial-frame-alist '(height . 60))
+(add-hook 'window-setup-hook #'my/center-frame)
+
+(add-to-list 'custom-theme-load-path user-emacs-directory)
+(load-theme 'monokai t)
+
+(let ((org-file (expand-file-name "config.org" user-emacs-directory))
+      (el-file (expand-file-name "config.el" user-emacs-directory)))
+  (if (file-newer-than-file-p org-file el-file)
+      (progn
+        (require 'org)
+        (org-babel-load-file org-file))
+    (load el-file)))
+
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))

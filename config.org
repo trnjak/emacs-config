@@ -1,0 +1,424 @@
+#+TITLE: My Emacs Config
+#+PROPERTY: header-args:emacs-lisp :lexical t
+
+* About
+This was made as an attempt to make Emacs more usable on modern macOS, as well as make it look cool.\\
+While it consists of things that are useful to me, the configuration is very minimal and modular, so anyone can easily build upon it. :)
+
+Inspired by [[https://github.com/snackon/Witchmacs][Witchmacs]]. It's what got me into Emacs back when I had a laptop that ran GNU/Linux. While Witchmacs is pretty outdated now, I recommend checking it out, as it explains things in greater detail.
+
+* Install
+Once Emacs is installed on your system, simply run the code below in your terminal:
+
+#+BEGIN_SRC shell
+  git clone https://github.com/trnjak/emacs-config.git ~/.emacs.d/
+#+END_SRC
+
+After installing, the first run of Emacs will take a bit longer, as it has to install the packages listed in the README.org file for the first time.
+
+* Configuration
+** Optimisations for macOS
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t; -*-
+
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+
+(use-package exec-path-from-shell
+  :ensure t
+  :init
+  (setq exec-path-from-shell-arguments nil)
+  :config
+  (when (or (memq window-system '(mac ns x))
+            (eq system-type 'darwin)
+            (daemonp))
+    (exec-path-from-shell-initialize)))
+#+END_SRC
+
+** Terminal (-nw) support
+#+BEGIN_SRC emacs-lisp
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key (kbd "<mouse-4>") #'scroll-down-line)
+  (global-set-key (kbd "<mouse-5>") #'scroll-up-line))
+#+END_SRC
+
+** Modern indentation and editing defaults
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil
+              tab-width 4
+              standard-indent 4)
+
+(setq c-default-style '((java-mode . "java")
+                        (awk-mode . "awk")
+                        (other . "linux"))
+      c-basic-offset 4
+      js-indent-level 2
+      css-indent-offset 2
+      python-indent-offset 4)
+
+(electric-pair-mode 1)
+(electric-indent-mode 1)
+(delete-selection-mode 1)
+#+END_SRC
+
+** Show line numbers
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+#+END_SRC
+
+** Show parent parentheses
+#+BEGIN_SRC emacs-lisp
+(show-paren-mode 1)
+#+END_SRC
+
+** Turn off default start screen
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+
+** Turn off most GUI elements
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+#+END_SRC
+
+** Enable copypasting outside of Emacs
+#+BEGIN_SRC emacs-lisp
+(setq select-enable-clipboard t)
+
+(use-package clipetty
+  :ensure t
+  :hook (after-init . global-clipetty-mode))
+#+END_SRC
+
+** Disable automatic creation of backup files
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+
+** Disable ring-bell
+#+BEGIN_SRC emacs-lisp
+(setq ring-bell-function #'ignore)
+#+END_SRC
+
+** Highlight line
+#+BEGIN_SRC emacs-lisp
+(global-hl-line-mode t)
+#+END_SRC
+
+** Transform yes-or-no into y-or-n
+#+BEGIN_SRC emacs-lisp
+(setopt use-short-answers t)
+#+END_SRC
+
+** Creating new window switches cursor to it
+#+BEGIN_SRC emacs-lisp
+(defun split-and-follow-horizontally ()
+  (interactive)
+  (split-window-below)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x 2") #'split-and-follow-horizontally)
+
+(defun split-and-follow-vertically ()
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x 3") #'split-and-follow-vertically)
+#+END_SRC
+
+* Packages
+** core utilities
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+  :ensure t)
+
+(use-package nerd-icons
+  :ensure t)
+
+(use-package editorconfig
+  :ensure t
+  :diminish editorconfig-mode
+  :config
+  (editorconfig-mode 1))
+
+(use-package dtrt-indent
+  :ensure t
+  :diminish dtrt-indent-mode
+  :hook (prog-mode . dtrt-indent-mode))
+#+END_SRC
+
+** evil bindings
+#+BEGIN_SRC emacs-lisp
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+#+END_SRC
+
+** completion ui and key discovery
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles basic partial-completion))
+                                   (eglot (styles orderless))
+                                   (eglot-capf (styles orderless)))))
+
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+  (which-key-mode 1))
+#+END_SRC
+
+** search and navigation
+#+BEGIN_SRC emacs-lisp
+(use-package consult
+  :ensure t
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("M-y" . consult-yank-pop)
+         ("C-c r" . consult-ripgrep)))
+#+END_SRC
+
+** spaceline and powerline
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :ensure t)
+
+(use-package powerline
+  :ensure t
+  :config
+  (spaceline-spacemacs-theme)
+  (powerline-reset))
+#+END_SRC
+
+** dashboard
+#+BEGIN_SRC emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title nil)
+  (let ((banner-img (expand-file-name "dash.png" user-emacs-directory)))
+    (setq dashboard-startup-banner
+          (if (and (display-graphic-p) (file-exists-p banner-img))
+              banner-img
+            '1)))
+  (setq dashboard-items '((recents . 5)))
+  (setq dashboard-center-content t)
+  (setq dashboard-items-default-alignment 'center)
+  (setq dashboard-icon-type 'nerd-icons)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t))
+#+END_SRC
+
+** file explorer
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs
+  :ensure t
+  :defer t
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+#+END_SRC
+
+** project management
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'default))
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
+#+END_SRC
+
+** terminal
+#+BEGIN_SRC emacs-lisp
+(use-package vterm
+  :ensure t
+  :commands vterm
+  :config
+  (setq vterm-max-scrollback 10000))
+#+END_SRC
+
+** corfu
+#+BEGIN_SRC emacs-lisp
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 1)
+  (corfu-auto-delay 0.05)
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)
+        ("RET" . corfu-insert))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
+
+(use-package corfu-terminal
+  :ensure t
+  :after corfu
+  :config
+  (unless (display-graphic-p)
+    (corfu-terminal-mode 1)))
+#+END_SRC
+
+** cape
+#+BEGIN_SRC emacs-lisp
+(use-package cape
+  :ensure t
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev 20)
+  (add-hook 'completion-at-point-functions #'cape-file 20)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block 20))
+#+END_SRC
+
+** eglot
+#+BEGIN_SRC emacs-lisp
+(when-let* ((npm-root (ignore-errors
+                        (string-trim
+                         (shell-command-to-string "npm root -g 2>/dev/null")))))
+  (when (file-directory-p npm-root)
+    (setenv "NODE_PATH"
+            (if (getenv "NODE_PATH")
+                (concat npm-root ":" (getenv "NODE_PATH"))
+              npm-root))))
+
+(use-package eglot
+  :ensure t
+  :defer t
+  :hook
+  ((c-mode . eglot-ensure)
+   (c-ts-mode . eglot-ensure)
+   (c++-mode . eglot-ensure)
+   (c++-ts-mode . eglot-ensure)
+   (java-mode . eglot-ensure)
+   (java-ts-mode . eglot-ensure)
+   (rust-mode . eglot-ensure)
+   (rust-ts-mode . eglot-ensure)
+   (web-mode . eglot-ensure)
+   (html-mode . eglot-ensure)
+   (css-mode . eglot-ensure)
+   (css-ts-mode . eglot-ensure)
+   (js-mode . eglot-ensure)
+   (js-ts-mode . eglot-ensure)
+   (typescript-mode . eglot-ensure)
+   (typescript-ts-mode . eglot-ensure)
+   (python-mode . eglot-ensure)
+   (python-ts-mode . eglot-ensure))
+  :config
+  (setq eglot-autoshutdown t
+        eglot-events-buffer-size 0)
+
+  (add-to-list 'eglot-server-programs
+               '(web-mode . ("vscode-html-language-server" "--stdio")))
+
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
+#+END_SRC
+
+** code formatting
+#+BEGIN_SRC emacs-lisp
+(use-package format-all
+  :ensure t
+  :commands (format-all-buffer format-all-region format-all-mode)
+  :hook (prog-mode . format-all-ensure-formatter)
+  :config
+  (defalias 'format-buffer #'format-all-buffer))
+#+END_SRC
+
+** rust, web mode
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode
+  :ensure t
+  :defer t)
+
+(use-package web-mode
+  :ensure t
+  :defer t
+  :mode ("\\.html\\'")
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-css-colorization t))
+#+END_SRC
+
+** git
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :commands (magit-status))
+#+END_SRC
+
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-reload-all))
+
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
+#+END_SRC
+
+** org-mode
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode))
+#+END_SRC
+
+** markdown-mode
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init
+  (setq markdown-command "multimarkdown")
+  :bind
+  (:map markdown-mode-map
+        ("C-c C-e" . markdown-do)))
+#+END_SRC
